@@ -5,20 +5,47 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Syndicate</title>
 <style>
+    /* ===== BODY ===== */
     body {
         margin: 0;
+        padding: 0;
         font-family: 'Arial', sans-serif;
-        background: #4B0082; /* dark purple */
+        background: black;
+        color: #fff;
+        overflow-x: hidden;
+    }
+
+    /* ===== SPARKLE ANIMATION ===== */
+    body::after {
+        content: '';
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+        background-size: 20px 20px;
+        pointer-events: none;
+        animation: sparkle 5s linear infinite;
+    }
+
+    @keyframes sparkle {
+        0% {background-position: 0 0;}
+        100% {background-position: 200px 200px;}
+    }
+
+    /* ===== CONTAINER ===== */
+    .container {
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         min-height: 100vh;
-        color: #fff;
+        text-align: center;
+        padding: 20px;
     }
 
+    /* ===== TITLE ===== */
     h1 {
-        font-size: 80px;
+        font-size: 60px;
         color: #FF00FF;
         text-shadow:
             0 0 5px #FF00FF,
@@ -26,34 +53,46 @@
             0 0 20px #FF00FF,
             0 0 40px #FF00FF;
         margin: 20px 0;
+        animation: fade 3s ease-in-out infinite alternate;
     }
 
+    @keyframes fade {
+        0% {text-shadow: 0 0 5px #FF00FF,0 0 10px #FF00FF;}
+        50% {text-shadow: 0 0 20px #FF00FF,0 0 50px #FF00FF;}
+        100% {text-shadow: 0 0 10px #FF00FF,0 0 25px #FF00FF;}
+    }
+
+    /* ===== BUTTONS ===== */
     .button {
-        background-color: #00FF00; /* lime green */
-        color: #4B0082; /* dark purple text */
+        background-color: #00FF00;
+        color: black;
         border: none;
-        padding: 15px 30px;
+        padding: 15px 40px;
         margin: 10px;
-        font-size: 20px;
-        border-radius: 15px;
-        cursor: pointer;
+        font-size: 18px;
         font-weight: bold;
+        border-radius: 25px;
+        cursor: pointer;
         transition: 0.3s;
+        box-shadow: 0 0 10px #00FF00, 0 0 20px #00FF00, 0 0 40px #00FF00;
     }
 
     .button:hover {
         transform: scale(1.1);
-        box-shadow: 0 0 20px #00FF00;
+        box-shadow: 0 0 20px #00FF00, 0 0 40px #00FF00, 0 0 60px #00FF00;
     }
 
+    /* ===== COMMANDS PANEL ===== */
     .commands, .credits {
-        background: rgba(255,255,255,0.1);
+        background: rgba(50,0,50,0.5);
+        border: 2px solid #FF00FF;
         padding: 20px;
-        border-radius: 15px;
-        width: 90%;
-        max-width: 800px;
         margin-top: 20px;
+        border-radius: 20px;
+        max-width: 800px;
+        width: 90%;
         display: none;
+        text-align: left;
         color: #fff;
     }
 
@@ -62,19 +101,19 @@
     }
 
     .category h3 {
-        margin: 0 0 5px 0;
+        cursor: pointer;
         color: #FF00FF;
-        text-shadow:
-            0 0 2px #FF00FF,
-            0 0 5px #FF00FF;
+        margin: 0 0 5px 0;
+        text-shadow: 0 0 2px #FF00FF, 0 0 5px #FF00FF;
     }
 
     .category ul {
-        list-style-type: none;
+        list-style: none;
         padding-left: 20px;
+        display: none;
     }
 
-    .category li {
+    .category ul li {
         margin-bottom: 3px;
     }
 
@@ -82,74 +121,81 @@
 </head>
 <body>
 
-<h1>Syndicate</h1>
+<div class="container">
+    <h1>Syndicate</h1>
 
-<button class="button" onclick="window.open('https://discord.com/oauth2/authorize?client_id=1470610892134547527&permissions=8&integration_type=0&scope=bot','_blank')">INVITE</button>
-<button class="button" onclick="toggleCommands()">SHOW COMMANDS</button>
-<button class="button" onclick="toggleCredits()">CREDITS</button>
+    <button class="button" onclick="window.open('https://discord.com/oauth2/authorize?client_id=1470610892134547527&permissions=8&integration_type=0&scope=bot','_blank')">INVITE</button>
+    <button class="button" onclick="toggleCommands()">SHOW COMMANDS</button>
+    <button class="button" onclick="toggleCredits()">CREDITS</button>
 
-<div class="commands" id="commandsDiv">
-    <div class="category">
-        <h3>Moderation</h3>
-        <ul>
-            <li>ban</li><li>unban</li><li>kick</li><li>timeout</li><li>removetimeout</li>
-            <li>mute</li><li>unmute</li><li>createmutedrole</li><li>clear</li><li>lockchannel</li>
-            <li>unlockchannel</li><li>slowmode</li><li>removeslowmode</li><li>addrole</li><li>removerole</li>
-            <li>warn</li><li>nickname</li><li>removenickname</li><li>createtextchannel</li><li>deletechannel</li>
-            <li>createvoicechannel</li><li>purgebots</li><li>purgeuser</li><li>lockdown</li><li>unlockserver</li>
-        </ul>
+    <div class="commands" id="commandsDiv">
+        <!-- Moderation -->
+        <div class="category" onclick="toggleCategory(this)">
+            <h3>Moderation</h3>
+            <ul>
+                <li>ban</li><li>unban</li><li>kick</li><li>timeout</li><li>removetimeout</li>
+                <li>mute</li><li>unmute</li><li>createmutedrole</li><li>clear</li><li>lockchannel</li>
+                <li>unlockchannel</li><li>slowmode</li><li>removeslowmode</li><li>addrole</li><li>removerole</li>
+                <li>warn</li><li>nickname</li><li>removenickname</li><li>createtextchannel</li><li>deletechannel</li>
+                <li>createvoicechannel</li><li>purgebots</li><li>purgeuser</li><li>lockdown</li><li>unlockserver</li>
+            </ul>
+        </div>
+
+        <!-- Utility -->
+        <div class="category" onclick="toggleCategory(this)">
+            <h3>Utility</h3>
+            <ul>
+                <li>ping</li><li>avatar</li><li>userinfo</li><li>serverinfo</li><li>say</li>
+                <li>poll</li><li>choose</li><li>uptime</li><li>invite</li><li>channelinfo</li>
+                <li>roleinfo</li><li>membercount</li><li>emojilist</li><li>servericon</li><li>permissions</li>
+                <li>reminder</li><li>binary</li><li>reverse</li><li>uppercase</li><li>lowercase</li>
+                <li>randomnumber</li><li>createembed</li><li>timestamp</li><li>hexcolor</li><li>botinfo</li>
+            </ul>
+        </div>
+
+        <!-- Fun -->
+        <div class="category" onclick="toggleCategory(this)">
+            <h3>Fun</h3>
+            <ul>
+                <li>eightball</li><li>coinflip</li><li>roll</li><li>rate</li><li>mock</li>
+                <li>clap</li><li>reversefun</li><li>choosefun</li><li>joke</li><li>ascii</li>
+                <li>ship</li><li>hack</li><li>cry</li><li>dance</li><li>angry</li>
+                <li>confused</li><li>love</li><li>scared</li><li>sleep</li><li>spamtext</li>
+                <li>randomfact</li><li>guess</li><li>countdown</li><li>randomcolor</li><li>capslock</li>
+            </ul>
+        </div>
+
+        <!-- Roleplay -->
+        <div class="category" onclick="toggleCategory(this)">
+            <h3>Roleplay</h3>
+            <ul>
+                <li>hug</li><li>kiss</li><li>slap</li><li>punch</li><li>cuddle</li>
+                <li>pat</li><li>bite</li><li>wave</li><li>highfive</li><li>handhold</li>
+                <li>stare</li><li>smile</li><li>wink</li><li>laugh</li><li>crywith</li>
+                <li>dancewith</li><li>bow</li><li>facepalm</li><li>blush</li><li>think</li>
+                <li>shrug</li><li>scream</li><li>sleep</li><li>celebrate</li><li>…</li>
+            </ul>
+        </div>
+
+        <!-- Economy -->
+        <div class="category" onclick="toggleCategory(this)">
+            <h3>Economy</h3>
+            <ul>
+                <li>balance</li><li>daily</li><li>work</li><li>deposit</li><li>withdraw</li>
+                <li>gamble</li><li>rob</li><li>leaderboard</li><li>givemoney</li><li>addxp</li>
+                <li>level</li><li>economyextra12</li><li>economyextra13</li><li>economyextra14</li><li>economyextra15</li>
+                <li>economyextra16</li><li>economyextra17</li><li>economyextra18</li><li>economyextra19</li><li>economyextra20</li>
+                <li>economyextra21</li><li>economyextra22</li><li>economyextra23</li><li>economyextra24</li><li>economyextra25</li>
+            </ul>
+        </div>
+
+        <button class="button" onclick="toggleCommands()">HIDE COMMANDS</button>
     </div>
 
-    <div class="category">
-        <h3>Utility</h3>
-        <ul>
-            <li>ping</li><li>avatar</li><li>userinfo</li><li>serverinfo</li><li>say</li>
-            <li>poll</li><li>choose</li><li>uptime</li><li>invite</li><li>channelinfo</li>
-            <li>roleinfo</li><li>membercount</li><li>emojilist</li><li>servericon</li><li>permissions</li>
-            <li>reminder</li><li>binary</li><li>reverse</li><li>uppercase</li><li>lowercase</li>
-            <li>randomnumber</li><li>createembed</li><li>timestamp</li><li>hexcolor</li><li>botinfo</li>
-        </ul>
+    <div class="credits" id="creditsDiv">
+        <p>Resky-Owner</p>
+        <button class="button" onclick="toggleCredits()">HIDE CREDITS</button>
     </div>
-
-    <div class="category">
-        <h3>Fun</h3>
-        <ul>
-            <li>eightball</li><li>coinflip</li><li>roll</li><li>rate</li><li>mock</li>
-            <li>clap</li><li>reversefun</li><li>choosefun</li><li>joke</li><li>ascii</li>
-            <li>ship</li><li>hack</li><li>cry</li><li>dance</li><li>angry</li>
-            <li>confused</li><li>love</li><li>scared</li><li>sleep</li><li>spamtext</li>
-            <li>randomfact</li><li>guess</li><li>countdown</li><li>randomcolor</li><li>capslock</li>
-        </ul>
-    </div>
-
-    <div class="category">
-        <h3>Roleplay</h3>
-        <ul>
-            <li>hug</li><li>kiss</li><li>slap</li><li>punch</li><li>cuddle</li>
-            <li>pat</li><li>bite</li><li>wave</li><li>highfive</li><li>handhold</li>
-            <li>stare</li><li>smile</li><li>wink</li><li>laugh</li><li>crywith</li>
-            <li>dancewith</li><li>bow</li><li>facepalm</li><li>blush</li><li>think</li>
-            <li>shrug</li><li>scream</li><li>sleep</li><li>celebrate</li><li>…</li>
-        </ul>
-    </div>
-
-    <div class="category">
-        <h3>Economy</h3>
-        <ul>
-            <li>balance</li><li>daily</li><li>work</li><li>deposit</li><li>withdraw</li>
-            <li>gamble</li><li>rob</li><li>leaderboard</li><li>givemoney</li><li>addxp</li>
-            <li>level</li><li>economyextra12</li><li>economyextra13</li><li>economyextra14</li><li>economyextra15</li>
-            <li>economyextra16</li><li>economyextra17</li><li>economyextra18</li><li>economyextra19</li><li>economyextra20</li>
-            <li>economyextra21</li><li>economyextra22</li><li>economyextra23</li><li>economyextra24</li><li>economyextra25</li>
-        </ul>
-    </div>
-
-    <button class="button" onclick="toggleCommands()">HIDE COMMANDS</button>
-</div>
-
-<div class="credits" id="creditsDiv">
-    <p>Resky-Owner</p>
-    <button class="button" onclick="toggleCredits()">HIDE CREDITS</button>
 </div>
 
 <script>
@@ -161,6 +207,11 @@
     function toggleCredits() {
         const div = document.getElementById("creditsDiv");
         div.style.display = div.style.display === "block" ? "none" : "block";
+    }
+
+    function toggleCategory(cat) {
+        const ul = cat.querySelector("ul");
+        ul.style.display = ul.style.display === "block" ? "none" : "block";
     }
 </script>
 
